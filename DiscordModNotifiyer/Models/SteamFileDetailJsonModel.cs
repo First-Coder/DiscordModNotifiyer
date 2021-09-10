@@ -2,19 +2,19 @@
 
 namespace DiscordModNotifiyer.Models
 {
-    public class SteamModJsonModel
+    public class SteamFileDetailJsonModel
     {
-        public SteamModJsonResponseModel response { get; set; }
+        public SteamFileDetailJsonResponseModel response { get; set; }
     }
 
-    public class SteamModJsonResponseModel
+    public class SteamFileDetailJsonResponseModel
     {
         public int result { get; set; }
         public int resultcount { get; set; }
-        public List<SteamModJsonDetailModel> publishedfiledetails { get; set; }
+        public List<SteamFileDetailJsonDetailModel> publishedfiledetails { get; set; }
     }
 
-    public class SteamModJsonDetailModel
+    public class SteamFileDetailJsonDetailModel
     {
         public double publishedfileid { get; set; }
         public int result { get; set; }

@@ -1,7 +1,9 @@
 ﻿using DiscordModNotifiyer.Events;
 using DiscordModNotifiyer.Extensions;
+using DiscordModNotifiyer.Models;
 using JNogueira.Discord.Webhook.Client;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace DiscordModNotifiyer.Apis
@@ -12,16 +14,32 @@ namespace DiscordModNotifiyer.Apis
         {
             ConsoleExtensions.WriteColor(@$"[// ]Send {e.Mods.Count} Steam mods to discord...", ConsoleColor.DarkGreen);
 
+            // Get all Steam developer
+            var developerSteamIds = new List<string>();
+            foreach(var mod in e.Mods)
+            {
+                developerSteamIds.Add(mod.creator);
+            }
+
             foreach (var mod in e.Mods)
             {
                 ConsoleExtensions.WriteColor(@$"[// ]Send {mod.title} ({mod.publishedfileid}) to discord...", ConsoleColor.DarkGreen);
 
-                var player = await SteamApi.GetSteamPlayer(mod.creator);
+                SteamFileDetailJsonDetailModel collection;
+                string collectionString = "";
+                if (Program.Settings.SteamCollection)
+                {
+                    collection = await SteamApi.GetCollectionInfo(Program.Settings.SteamCollectionId);
+                    collectionString = $" | Collection: {collection.title} (Id: {Program.Settings.SteamCollectionId})";
+                }
+
+                var players = await SteamApi.GetSteamPlayers(developerSteamIds);
+                var gamename = await SteamApi.GetGameInfo(mod.creator_app_id);
                 var client = new DiscordWebhookClient(Program.Settings.DiscordWebHook);
                 var message = new DiscordMessage(
-                    $"We got a new Mod Update for the Mod: {mod.title} ({mod.publishedfileid}) \n",
-                    username: $"{player.personaname} ({mod.creator})",
-                    avatarUrl: player.avatar,
+                    $"{gamename}{collectionString}\nMod: {mod.title} (Id: {mod.publishedfileid})",
+                    username: $"{players.Find(x => x.steamid.Equals(mod.creator))?.personaname ?? mod.creator}",
+                    avatarUrl: players.Find(x => x.steamid.Equals(mod.creator))?.avatar,
                     tts: false,
                     embeds: new[]
                     {

@@ -1,14 +1,9 @@
 ﻿using DiscordModNotifiyer.Apis;
 using DiscordModNotifiyer.Extensions;
 using DiscordModNotifiyer.Models;
-using JNogueira.Discord.Webhook.Client;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Net;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace DiscordModNotifiyer
 {
@@ -20,6 +15,11 @@ namespace DiscordModNotifiyer
         private const string SETTINGS_FILENAME = "Settings.json";
 
         /// <summary>
+        /// Steam Api Link for a list of all games
+        /// </summary>
+        public const string STEAM_API_GAME_LIST_URL = "https://api.steampowered.com/ISteamApps/GetAppList/v2/";
+
+        /// <summary>
         /// Steam Api Link for a Collection id
         /// </summary>
         public const string STEAM_API_COLLECTION_URL = "https://api.steampowered.com/ISteamRemoteStorage/GetCollectionDetails/v1/?format=json";
@@ -27,7 +27,7 @@ namespace DiscordModNotifiyer
         /// <summary>
         /// Steam Api Link for a Mod id
         /// </summary>
-        public const string STEAM_API_MOD_URL = "https://api.steampowered.com/ISteamRemoteStorage/GetPublishedFileDetails/v1/?format=json";
+        public const string STEAM_API_FILE_DETAILS_URL = "https://api.steampowered.com/ISteamRemoteStorage/GetPublishedFileDetails/v1/?format=json";
 
         /// <summary>
         /// Steam Api Link for a player information
@@ -62,13 +62,9 @@ namespace DiscordModNotifiyer
                 switch (cki.KeyChar)
                 {
                     case '1':
-                        ConsoleExtensions.WriteColor(@"[//--Execute Refresh----------------------------------------------]", ConsoleColor.DarkGreen);
                         _ = steamApi.UpdateSteamMods();
                         break;
                     case '2':
-
-                        break;
-                    case '3':
                         ReloadSettings();
                         ConsoleExtensions.ClearConsole();
                         steamApi.RefreshSettings();

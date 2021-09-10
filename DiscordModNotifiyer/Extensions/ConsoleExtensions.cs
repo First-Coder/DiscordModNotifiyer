@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 
@@ -13,13 +12,6 @@ namespace DiscordModNotifiyer.Extensions
         public static void ClearConsole()
         {
             Console.Clear();
-
-            //if (string.IsNullOrEmpty(Settings.ProxyIp))
-            //{
-            //    WriteColor(@"[//--Warning------------------------------------------------------]", ConsoleColor.Yellow);
-            //    WriteColor($"[// ProxyIp:] Value is not set", ConsoleColor.Yellow);
-            //    WriteColor(@"[//---------------------------------------------------------------]", ConsoleColor.Yellow);
-            //}
 
             Console.WriteLine(Environment.NewLine);
             WriteColor(@"[$$$$$$$$\ $$\                       $$\            $$$$$$\                  $$\]", ConsoleColor.DarkGreen);
@@ -36,38 +28,38 @@ namespace DiscordModNotifiyer.Extensions
             WriteColor($"[// Title:] {Assembly.GetEntryAssembly().GetName().Name}", ConsoleColor.DarkGreen);
             WriteColor($"[// Version:] {Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyFileVersionAttribute>().Version}", ConsoleColor.DarkGreen);
             WriteColor($"[// Autor:] {Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyCopyrightAttribute>().Copyright}", ConsoleColor.DarkGreen);
-            //WriteColor(@"[//--Exit Codes---------------------------------------------------]", ConsoleColor.DarkGreen);
-            //WriteColor($"[// 0:] Application successful exited", ConsoleColor.DarkGreen);
-            //WriteColor($"[// 1:] Supported OS is not given", ConsoleColor.DarkGreen);
+            WriteColor(@"[//--Exit Codes---------------------------------------------------]", ConsoleColor.DarkGreen);
+            WriteColor($"[// 0:] Application successful exited", ConsoleColor.DarkGreen);
+            WriteColor($"[// 1:] Missing Steam API Key in the Settings.json", ConsoleColor.DarkGreen);
+            WriteColor($"[// 2:] Missing Discord Web Hook in the Settings.json", ConsoleColor.DarkGreen);
             WriteColor(@"[//--Settings-----------------------------------------------------]", ConsoleColor.DarkGreen);
             WriteColor($"[// Automatic Refresh / Check:] {Program.Settings.AutomaticRefresh}", ConsoleColor.DarkGreen);
             WriteColor($"[// Automatic Refresh every (min):] {Program.Settings.AutomaticRefreshMin}", ConsoleColor.DarkGreen);
             WriteColor($"[// Check the Collection Id:] {Program.Settings.SteamCollection}", ConsoleColor.DarkGreen);
-            var steamModIds = Program.Settings.SteamModIds.ToString();
-            var ids = Program.Settings.SteamCollection ? Program.Settings.SteamCollectionId.ToString() : String.Join(", ", steamModIds);
+            var ids = Program.Settings.SteamCollection ? Program.Settings.SteamCollectionId.ToString() : String.Join(", ", Program.Settings.SteamModIds.ToArray());
             WriteColor($"[// Collection Id or Mod Ids:] {ids}", ConsoleColor.DarkGreen);
             WriteColor(@"[//--Options------------------------------------------------------]", ConsoleColor.DarkGreen);
             WriteColor($"[// 1:] Execute Refresh", ConsoleColor.DarkGreen);
-            WriteColor($"[// 2:] Enable / Disable automatic Refresh", ConsoleColor.DarkGreen);
-            WriteColor($"[// 3:] Reload settings.json", ConsoleColor.DarkGreen);
+            WriteColor($"[// 2:] Reload settings.json", ConsoleColor.DarkGreen);
             WriteColor($"[// ESC:] Close application", ConsoleColor.DarkGreen);
             WriteColor(@"[//---------------------------------------------------------------]", ConsoleColor.DarkGreen);
             Console.WriteLine(Environment.NewLine);
 
-            //if (string.IsNullOrEmpty(Settings.NetworkChangeAdapters))
-            //{
-            //    WriteColor(@"[//--No Networkadapters-------------------------------------------]", ConsoleColor.DarkRed);
-            //    WriteColor($"[//:] Please insert Networkadapters (\"NetworkChangeAdapters\") in the Settings.json", ConsoleColor.DarkRed);
-            //    WriteColor(@"[//---------------------------------------------------------------]", ConsoleColor.DarkRed);
-            //    if (!Debugger.IsAttached)
-            //    {
-            //        Environment.Exit(3);
-            //    }
-            //    else
-            //    {
-            //        Console.WriteLine(Environment.NewLine);
-            //    }
-            //}
+            if (string.IsNullOrEmpty(Program.Settings.SteamApiKey))
+            {
+                WriteColor(@"[//--No Steam API Key---------------------------------------------]", ConsoleColor.DarkRed);
+                WriteColor($"[//:] Please insert a Steam API Key into the Settings.json", ConsoleColor.DarkRed);
+                WriteColor(@"[//---------------------------------------------------------------]", ConsoleColor.DarkRed);
+                Environment.Exit(1);
+            }
+
+            if (string.IsNullOrEmpty(Program.Settings.SteamApiKey))
+            {
+                WriteColor(@"[//--No Discord Web Hook------------------------------------------]", ConsoleColor.DarkRed);
+                WriteColor($"[//:] Please insert a Discord Web Hook into the Settings.json", ConsoleColor.DarkRed);
+                WriteColor(@"[//---------------------------------------------------------------]", ConsoleColor.DarkRed);
+                Environment.Exit(2);
+            }
         }
 
 

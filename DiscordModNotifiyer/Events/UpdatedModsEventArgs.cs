@@ -6,6 +6,6 @@ namespace DiscordModNotifiyer.Events
 {
     public class UpdatedModsEventArgs : EventArgs
     {
-        public List<SteamModJsonDetailModel> Mods { get; set; }
+        public List<SteamFileDetailJsonDetailModel> Mods { get; set; }
     }
 }

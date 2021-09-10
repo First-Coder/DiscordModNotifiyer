@@ -4,20 +4,13 @@ namespace DiscordModNotifiyer.Models
 {
     public class Settings
     {
-        public bool CallOnNetworkchange { get; set; }
-        public string NetworkChangeAdapters { get; set; }
-        public bool SetProxyOnStartUp { get; set; }
+        public bool AutomaticRefresh { get; set; }
+        public int AutomaticRefreshMin { get; set; }
 
-        public string UniquePrefixLine { get; set; }
-        public string UniqueSuffixLine { get; set; }
+        public string DiscordWebHook { get; set; }
 
-        public string BashPath { get; set; }
-        public string BashCommandEnable { get; set; }
-        public string BashCommandDisable { get; set; }
-
-        public string ProxyIp { get; set; }
-        public int Timeout { get; set; }
-
-        //public List<FileSettings> Files { get; set; }
+        public bool SteamCollection { get; set; }
+        public double SteamCollectionId { get; set; }
+        public List<double> SteamModIds { get; set; }
     }
 }

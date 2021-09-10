@@ -1,22 +1,37 @@
-﻿using DiscordModNotifiyer.Extensions;
+﻿using DiscordModNotifiyer.Apis;
+using DiscordModNotifiyer.Extensions;
 using DiscordModNotifiyer.Models;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace DiscordModNotifiyer
 {
     class Program
     {
         /// <summary>
-        /// Global name of the settings file
+        /// Global name of the Settings file
         /// </summary>
-        private const string SETTINGS_FILENAME = "settings.json";
+        private const string SETTINGS_FILENAME = "Settings.json";
+
+        /// <summary>
+        /// Steam Api Link for a Collection id
+        /// </summary>
+        public const string STEAM_API_COLLECTION_URL = "https://api.steampowered.com/ISteamRemoteStorage/GetCollectionDetails/v1/?format=json";
+
+        /// <summary>
+        /// Steam Api Link for a Mod id
+        /// </summary>
+        public const string STEAM_API_MOD_URL = "https://api.steampowered.com/ISteamRemoteStorage/GetPublishedFileDetails/v1/?format=json";
 
         /// <summary>
         /// Settings json file
         /// </summary>
-        public static Settings settings;
+        public static Settings Settings;
 
         /// <summary>
         /// Constructor
@@ -24,7 +39,9 @@ namespace DiscordModNotifiyer
         /// <param name="args"></param>
         static void Main(string[] args)
         {
-            settings = JsonConvert.DeserializeObject<Settings>(File.ReadAllText(SETTINGS_FILENAME));
+            Settings = JsonConvert.DeserializeObject<Settings>(File.ReadAllText(SETTINGS_FILENAME));
+            var steamApi = new SteamApi();
+
             ConsoleExtensions.ClearConsole();
 
             ConsoleKeyInfo cki;
@@ -35,16 +52,16 @@ namespace DiscordModNotifiyer
                 switch (cki.KeyChar)
                 {
                     case '1':
+                        _ = steamApi.UpdateSteamMods();
+                        break;
+                    case '2':
                         
                         break;
-                        //case '2':
-                        //    Clear();
-                        //    EnableProxy();
-                        //    break;
-                        //case '3':
-                        //    Clear();
-                        //    DisableProxy();
-                        //    break;
+                    case '3':
+                        ReloadSettings();
+                        ConsoleExtensions.ClearConsole();
+                        steamApi.RefreshSettings();
+                        break;
                 }
             } while (cki.Key != ConsoleKey.Escape);
 
@@ -52,8 +69,8 @@ namespace DiscordModNotifiyer
         }
 
         /// <summary>
-        /// Reload settings.json file and save them into the settings object
+        /// Reload Settings.json file and save them into the Settings object
         /// </summary>
-        public static void ReloadSettings() => settings = JsonConvert.DeserializeObject<Settings>(File.ReadAllText(SETTINGS_FILENAME));
+        public static void ReloadSettings() => Settings = JsonConvert.DeserializeObject<Settings>(File.ReadAllText(SETTINGS_FILENAME));
     }
 }

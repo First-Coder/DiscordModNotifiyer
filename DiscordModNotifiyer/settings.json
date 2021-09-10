@@ -1,5 +1,6 @@
 {
   "__General": "General settings",
+  "SteamApiKey": "B23067EC4C7E972A901F43C617CB8DE4",
   "AutomaticRefresh": false,
   "AutomaticRefreshMin": 10,
 
@@ -7,7 +8,7 @@
   "DiscordWebHook": "https://discord.com/api/webhooks/885800670299574282/d4axeqS_qErnk-EKyMEMZcZCrlWH2QFI1PnmcV96aJsDeuisz8EU1t0dYwE4a8p5ZClr",
 
   "__Steam": "This Area is for steam settings",
-  "SteamCollection": true,
+  "SteamCollection": false,
   "SteamCollectionId": 2512034643,
-  "SteamModIds": [ 123, 456 ]
+  "SteamModIds": [ 1551907938 ]
 }

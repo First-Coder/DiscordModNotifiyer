@@ -1,6 +1,7 @@
 ﻿using DiscordModNotifiyer.Apis;
 using DiscordModNotifiyer.Extensions;
 using DiscordModNotifiyer.Models;
+using JNogueira.Discord.Webhook.Client;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -29,6 +30,11 @@ namespace DiscordModNotifiyer
         public const string STEAM_API_MOD_URL = "https://api.steampowered.com/ISteamRemoteStorage/GetPublishedFileDetails/v1/?format=json";
 
         /// <summary>
+        /// Steam Api Link for a player information
+        /// </summary>
+        public const string STEAM_API_PLAYER_URL = "https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002?key=";
+
+        /// <summary>
         /// Settings json file
         /// </summary>
         public static Settings Settings;
@@ -40,7 +46,11 @@ namespace DiscordModNotifiyer
         static void Main(string[] args)
         {
             Settings = JsonConvert.DeserializeObject<Settings>(File.ReadAllText(SETTINGS_FILENAME));
+
             var steamApi = new SteamApi();
+            var discordApi = new DiscordApi();
+
+            steamApi.OnUpdatedModsFound += (sender, e) => _ = discordApi.SendHook(sender, e);
 
             ConsoleExtensions.ClearConsole();
 
@@ -52,10 +62,11 @@ namespace DiscordModNotifiyer
                 switch (cki.KeyChar)
                 {
                     case '1':
+                        ConsoleExtensions.WriteColor(@"[//--Execute Refresh----------------------------------------------]", ConsoleColor.DarkGreen);
                         _ = steamApi.UpdateSteamMods();
                         break;
                     case '2':
-                        
+
                         break;
                     case '3':
                         ReloadSettings();

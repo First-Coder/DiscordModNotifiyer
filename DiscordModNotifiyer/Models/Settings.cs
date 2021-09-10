@@ -4,6 +4,7 @@ namespace DiscordModNotifiyer.Models
 {
     public class Settings
     {
+        public string SteamApiKey { get; set; }
         public bool AutomaticRefresh { get; set; }
         public int AutomaticRefreshMin { get; set; }
 

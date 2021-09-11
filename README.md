@@ -21,10 +21,10 @@ sudo apt install screen
 ```
 
 ## Installation of the application itself
-Move the Proxy_Changer directory to /opt/Proxy_Changer/.
+Move the Proxy_Changer directory to /opt/DMN/.
 
 ## Installation of the systemctl service
-Move the file LinuxProxyChanger.service to the Systemd directory.
+Move the file DMN.service to the Systemd directory.
 
 activate the autostart with the following command
 

@@ -21,7 +21,7 @@ sudo apt install screen
 ```
 
 ## Installation of the application itself
-Move the Proxy_Changer directory to /opt/DMN/.
+Move the DMN directory to /opt/DMN/.
 
 ## Installation of the systemctl service
 Move the file DMN.service to the Systemd directory.

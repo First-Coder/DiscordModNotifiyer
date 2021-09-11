@@ -119,7 +119,7 @@ namespace DiscordModNotifiyer.Apis
         {
             ConsoleExtensions.WriteColor(@$"[// ]Checking {modIds.Count} Steam mods...", ConsoleColor.DarkGreen);
 
-            var filename = "./savedMods.json";
+            var filename = "./SavedMods.json";
             var model = await GetPublishedFileDetails<SteamFileDetailJsonModel>(modIds);
             var needUpdateModels = new List<SteamFileDetailJsonDetailModel>();
             var savedMods = JsonConvert.DeserializeObject<List<LastEditModModel>>(File.ReadAllText(filename));

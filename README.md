@@ -12,47 +12,47 @@ can also being used as service in Linux.
 Install the following packages in the terminal
 
 ```bash
-$ wget https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb
-$ sudo dpkg -i packages-microsoft-prod.deb
-$ sudo apt update
-$ sudo apt install apt-transport-https
-$ sudo apt install dotnet-runtime-3.1
-$ sudo apt install screen
+wget https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb
+sudo dpkg -i packages-microsoft-prod.deb
+sudo apt update
+sudo apt install apt-transport-https
+sudo apt install dotnet-runtime-3.1
+sudo apt install screen
 ```
 
 ## Installation of the application itself
-Move the Proxy_Changer directory to /opt/Proxy_Changer/.
+Move the DMN directory to /opt/DMN/.
 
 ## Installation of the systemctl service
-Move the file LinuxProxyChanger.service to the Systemd directory.
+Move the file DMN.service to the Systemd directory.
 
 activate the autostart with the following command
 
 ```bash
-systemctl enable LinuxProxyChanger
+systemctl enable DMN
 ```
 
 ## Usage
 
 Start programme manually
 ```bash
-systemctl start LinuxProxyChanger
+systemctl start DMN
 ```
 
 Stop programme manually
 ```bash
-systemctl stop LinuxProxyChanger
+systemctl stop DMN
 ```
 
 Check programme status
 ```bash
-systemctl status LinuxProxyChanger
+systemctl status DMN
 ```
 
 You can call up the console of the program with the following command
 
 ```bash
-screen -r LinuxProxyChanger
+sudo screen -r DiscordModNotifiyer
 ```
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.

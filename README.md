@@ -29,7 +29,7 @@ Move the file DMN.service to the Systemd directory.
 activate the autostart with the following command
 
 ```bash
-systemctl enable LinuxProxyChanger
+systemctl enable DMN
 ```
 
 ## Usage

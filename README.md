@@ -12,12 +12,12 @@ can also being used as service in Linux.
 Install the following packages in the terminal
 
 ```bash
-$ wget https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb
-$ sudo dpkg -i packages-microsoft-prod.deb
-$ sudo apt update
-$ sudo apt install apt-transport-https
-$ sudo apt install dotnet-runtime-3.1
-$ sudo apt install screen
+wget https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb
+sudo dpkg -i packages-microsoft-prod.deb
+sudo apt update
+sudo apt install apt-transport-https
+sudo apt install dotnet-runtime-3.1
+sudo apt install screen
 ```
 
 ## Installation of the application itself

@@ -62,6 +62,29 @@ namespace DiscordModNotifiyer.Extensions
             }
         }
 
+        /// <summary>
+        /// Set a critical error into the console and close the application
+        /// </summary>
+        /// <param name="text">Information text</param>
+        /// <param name="exitCode"></param>
+        public static void CriticalError(string text, int exitCode)
+        {
+            WriteColor(@"[//--Critical Error-----------------------------------------------]", ConsoleColor.DarkRed);
+            WriteColor($"[//:] {text}", ConsoleColor.DarkRed);
+            WriteColor(@"[//---------------------------------------------------------------]", ConsoleColor.DarkRed);
+            Environment.Exit(exitCode);
+        }
+
+        /// <summary>
+        /// Set a error message into the console
+        /// </summary>
+        /// <param name="text">Information text</param>
+        public static void Error(string text)
+        {
+            WriteColor(@"[// We got an Error...]", ConsoleColor.DarkRed);
+            WriteColor($"[// ]{text}", ConsoleColor.DarkRed);
+            WriteColor(@"[// Continue application...]", ConsoleColor.DarkRed);
+        }
 
         /// <summary>
         /// Write some coloring console messages for the user

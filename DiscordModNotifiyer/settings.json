@@ -2,7 +2,7 @@
   "__General": "General settings",
   "SteamApiKey": "B23067EC4C7E972A901F43C617CB8DE4",
   "AutomaticRefresh": true,
-  "AutomaticRefreshMin": 10,
+  "AutomaticRefreshMin": 1,
 
   "__Discord": "This Area is for discord settings",
   "DiscordWebHook": "https://discord.com/api/webhooks/885964726260097104/SiDsbrtTwUx54g8WI3QPQbHHJfQD3-6vwwgUDVQxPSk8BGWP9mQPdbOBQrS2jtrM6BGM",

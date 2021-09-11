@@ -60,7 +60,7 @@ namespace DiscordModNotifiyer.Apis
                 var parameters = new List<KeyValuePair<string, string>>();
                 parameters.Add(new KeyValuePair<string, string>("collectioncount", "1"));
                 parameters.Add(new KeyValuePair<string, string>("publishedfileids[0]", Program.Settings.SteamCollectionId.ToString()));
-                
+
                 var httpClient = new HttpClient();
 
                 using (var content = new FormUrlEncodedContent(parameters))
@@ -68,12 +68,20 @@ namespace DiscordModNotifiyer.Apis
                     content.Headers.Clear();
                     content.Headers.Add("Content-Type", "application/x-www-form-urlencoded");
 
-                    HttpResponseMessage response = await httpClient.PostAsync(Program.STEAM_API_COLLECTION_URL, content);
+                    try
+                    {
+                        HttpResponseMessage response = await httpClient.PostAsync(Program.STEAM_API_COLLECTION_URL, content);
 
-                    var model = JsonConvert.DeserializeObject<SteamCollectionModel>(await response.Content.ReadAsStringAsync());
-                    var modIds = model.response.collectiondetails.FirstOrDefault()?.children.Select(x => x.publishedfileid);
+                        var model = JsonConvert.DeserializeObject<SteamCollectionModel>(await response.Content.ReadAsStringAsync());
+                        var modIds = model.response.collectiondetails.FirstOrDefault()?.children.Select(x => x.publishedfileid);
 
-                    await CheckSteamMods(modIds.ToList());
+                        await CheckSteamMods(modIds.ToList());
+                    }
+                    catch (Exception e)
+                    {
+                        ConsoleExtensions.Error(e.Message);
+                        return;
+                    }
                 }
             }
             else
@@ -93,11 +101,17 @@ namespace DiscordModNotifiyer.Apis
             ConsoleExtensions.WriteColor(@$"[// ]Checking {modIds.Count} Steam mods...", ConsoleColor.DarkGreen);
 
             var filename = "./SavedMods.json";
-            var model = await SteamExtensions.GetPublishedFileDetails<SteamFileDetailJsonModel>(modIds);
+            var model = await SteamExtensions.GetPublishedFileDetails(modIds);
             var needUpdateModels = new List<SteamFileDetailJsonDetailModel>();
             var savedMods = JsonConvert.DeserializeObject<List<LastEditModModel>>(File.ReadAllText(filename));
 
-            foreach(var mod in model.response.publishedfiledetails)
+            // Http request failed. No check possible
+            if (model == null)
+            {
+                return;
+            }
+
+            foreach (var mod in model.response.publishedfiledetails)
             {
                 var sMod = savedMods.FirstOrDefault(x => x.ModId.Equals(mod.publishedfileid.ToString()));
                 if (sMod == null || !sMod.LastUpdate.ToString().Equals(mod.time_updated.ToString()))
@@ -120,7 +134,7 @@ namespace DiscordModNotifiyer.Apis
 
             File.WriteAllText(filename, JsonConvert.SerializeObject(savedMods));
 
-            if(OnUpdatedModsFound != null)
+            if (OnUpdatedModsFound != null)
             {
                 OnUpdatedModsFound(this, new UpdatedModsEventArgs
                 {

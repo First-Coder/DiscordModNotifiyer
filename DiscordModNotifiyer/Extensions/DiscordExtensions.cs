@@ -2,7 +2,6 @@
 using JNogueira.Discord.Webhook.Client;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace DiscordModNotifiyer.Extensions
@@ -41,8 +40,8 @@ namespace DiscordModNotifiyer.Extensions
                 var client = new DiscordWebhookClient(Program.Settings.DiscordWebHook);
                 var message = new DiscordMessage(
                     $"{gamename}{collectionString}\nMod: {mod.title} (Id: {mod.publishedfileid})",
-                    username: $"{players.Find(x => x.steamid.Equals(mod.creator))?.personaname ?? mod.creator}",
-                    avatarUrl: players.Find(x => x.steamid.Equals(mod.creator))?.avatar,
+                    username: $"{players?.Find(x => x.steamid.Equals(mod.creator))?.personaname ?? mod.creator}",
+                    avatarUrl: players?.Find(x => x.steamid.Equals(mod.creator))?.avatar,
                     tts: false,
                     embeds: new[]
                     {
@@ -62,7 +61,15 @@ namespace DiscordModNotifiyer.Extensions
                         )
                     }
                 );
-                await client.SendToDiscord(message);
+
+                try
+                {
+                    await client.SendToDiscord(message);
+                }
+                catch (Exception e)
+                {
+                    ConsoleExtensions.Error(e.Message);
+                }
             }
 
             ConsoleExtensions.WriteColor(@"[//---------------------------------------------------------------]", ConsoleColor.DarkGreen);

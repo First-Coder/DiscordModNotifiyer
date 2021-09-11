@@ -19,17 +19,25 @@ namespace DiscordModNotifiyer.Extensions
         /// <returns>List of steam player informations</returns>
         public static async Task<List<SteamPlayerPlayerModel>> GetSteamPlayers(List<string> steamids)
         {
-            var request = WebRequest.Create(Program.STEAM_API_PLAYER_URL + Program.Settings.SteamApiKey + "&steamids=" + String.Join(",", steamids));
-            request.Method = "GET";
+            try
+            {
+                var request = WebRequest.Create(Program.STEAM_API_PLAYER_URL + Program.Settings.SteamApiKey + "&steamids=" + String.Join(",", steamids));
+                request.Method = "GET";
 
-            using var webResponse = request.GetResponse();
-            using var webStream = webResponse.GetResponseStream();
+                using var webResponse = request.GetResponse();
+                using var webStream = webResponse.GetResponseStream();
 
-            using var reader = new StreamReader(webStream);
-            var data = await reader.ReadToEndAsync();
-            var model = JsonConvert.DeserializeObject<SteamPlayerModel>(data);
+                using var reader = new StreamReader(webStream);
+                var data = await reader.ReadToEndAsync();
+                var model = JsonConvert.DeserializeObject<SteamPlayerModel>(data);
 
-            return model.response.players;
+                return model.response.players;
+            }
+            catch (Exception e)
+            {
+                ConsoleExtensions.Error(e.Message);
+                return null;
+            }
         }
 
         /// <summary>
@@ -44,24 +52,39 @@ namespace DiscordModNotifiyer.Extensions
 
             if (reloadList)
             {
-                var request = WebRequest.Create(Program.STEAM_API_GAME_LIST_URL);
-                request.Method = "GET";
-
-                using var webResponse = request.GetResponse();
-                using var webStream = webResponse.GetResponseStream();
-
-                using var reader = new StreamReader(webStream);
-                var data = await reader.ReadToEndAsync();
-
-                using (StreamWriter sw = File.CreateText(filename))
+                try
                 {
-                    sw.WriteLine(data);
+                    var request = WebRequest.Create(Program.STEAM_API_GAME_LIST_URL);
+                    request.Method = "GET";
+
+                    using var webResponse = request.GetResponse();
+                    using var webStream = webResponse.GetResponseStream();
+
+                    using var reader = new StreamReader(webStream);
+                    var data = await reader.ReadToEndAsync();
+
+                    using (StreamWriter sw = File.CreateText(filename))
+                    {
+                        sw.WriteLine(data);
+                    }
+                }
+                catch (Exception e)
+                {
+                    ConsoleExtensions.Error(e.Message);
                 }
             }
 
-            var content = File.ReadAllText(filename);
-            var apps = JsonConvert.DeserializeObject<GameInfo>(content).applist.apps;
-            return apps.FirstOrDefault(x => x.appid.Equals(appId)).name ?? "Unknown Gamename";
+            try
+            {
+                var content = File.ReadAllText(filename);
+                var apps = JsonConvert.DeserializeObject<GameInfo>(content).applist.apps;
+                return apps.FirstOrDefault(x => x.appid.Equals(appId)).name ?? "Unknown Gamename";
+            }
+            catch (Exception e)
+            {
+                ConsoleExtensions.Error(e.Message);
+                return "Unknown Gamename";
+            }
         }
 
         /// <summary>
@@ -71,8 +94,8 @@ namespace DiscordModNotifiyer.Extensions
         /// <returns>Details of the collection by given collection id</returns>
         public static async Task<SteamFileDetailJsonDetailModel> GetCollectionInfo(double steamCollectionId)
         {
-            var model = await GetPublishedFileDetails<SteamFileDetailJsonModel>(new List<double> { steamCollectionId });
-            return model.response.publishedfiledetails.FirstOrDefault();
+            var model = await GetPublishedFileDetails(new List<double> { steamCollectionId });
+            return model?.response?.publishedfiledetails?.FirstOrDefault();
         }
 
         /// <summary>
@@ -81,7 +104,7 @@ namespace DiscordModNotifiyer.Extensions
         /// <typeparam name="T">Type of the json deserilize object that is needed</typeparam>
         /// <param name="files">List of file ids</param>
         /// <returns>Specific information above the given file ids</returns>
-        public static async Task<T> GetPublishedFileDetails<T>(List<double> files)
+        public static async Task<SteamFileDetailJsonModel> GetPublishedFileDetails(List<double> files)
         {
             var parameters = new List<KeyValuePair<string, string>>();
             int i = 0;
@@ -98,9 +121,16 @@ namespace DiscordModNotifiyer.Extensions
                 content.Headers.Clear();
                 content.Headers.Add("Content-Type", "application/x-www-form-urlencoded");
 
-                HttpResponseMessage response = await httpClient.PostAsync(Program.STEAM_API_FILE_DETAILS_URL, content);
-
-                return JsonConvert.DeserializeObject<T>(await response.Content.ReadAsStringAsync());
+                try
+                {
+                    HttpResponseMessage response = await httpClient.PostAsync(Program.STEAM_API_FILE_DETAILS_URL, content);
+                    return JsonConvert.DeserializeObject<SteamFileDetailJsonModel>(await response.Content.ReadAsStringAsync());
+                }
+                catch (Exception e)
+                {
+                    ConsoleExtensions.Error(e.Message);
+                    return null;
+                }
             }
         }
     }

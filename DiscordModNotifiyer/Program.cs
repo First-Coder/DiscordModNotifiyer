@@ -45,14 +45,12 @@ namespace DiscordModNotifiyer
         /// <param name="args"></param>
         static void Main(string[] args)
         {
-            Settings = JsonConvert.DeserializeObject<Settings>(File.ReadAllText(SETTINGS_FILENAME));
+            ReloadSettings();
 
             var steamApi = new SteamApi();
-
             steamApi.OnUpdatedModsFound += (sender, e) => _ = DiscordExtensions.SendHook(e.Mods);
 
             ConsoleExtensions.ClearConsole();
-
             ConsoleKeyInfo cki;
             do
             {
@@ -77,6 +75,16 @@ namespace DiscordModNotifiyer
         /// <summary>
         /// Reload Settings.json file and save them into the Settings object
         /// </summary>
-        public static void ReloadSettings() => Settings = JsonConvert.DeserializeObject<Settings>(File.ReadAllText(SETTINGS_FILENAME));
+        public static void ReloadSettings()
+        {
+            try
+            {
+                Settings = JsonConvert.DeserializeObject<Settings>(File.ReadAllText(SETTINGS_FILENAME));
+            }
+            catch (Exception e)
+            {
+                ConsoleExtensions.CriticalError(e.Message, 1);
+            }
+        }
     }
 }

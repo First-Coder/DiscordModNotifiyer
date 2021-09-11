@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace DiscordModNotifiyer.Models
+﻿namespace DiscordModNotifiyer.Models
 {
     public class LastEditModModel
     {

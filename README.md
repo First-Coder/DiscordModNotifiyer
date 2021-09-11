@@ -32,7 +32,23 @@ activate the autostart with the following command
 systemctl enable DMN
 ```
 
-## Usage
+## Program usage
+
+The program has a `Settings.json` file which contains all needed settings to change. In the following table are the options described: 
+
+| Option              | Type          | Description                                                                    |
+|---------------------|---------------|--------------------------------------------------------------------------------|
+| SteamApiKey         | string        | The Steam Api Key you can get from https://steamcommunity.com/dev/apikey       |
+| AutomaticRefresh    | true \| false | true if the script should check automatically the mods (default: true)         |
+| AutomaticRefreshMin | int           | The time in minutes for the timer to check the mods (default: 1)               |
+| DiscordWebHook      | string        | The Discord Webhook link to the text channel                                   |
+| SteamCollection     | true \| false | If you want to check a steam collection set this value to true (default: true) |
+| SteamCollectionId   | int           | The id of the steam collectionn                                                |
+| SteamModIds         | Array         | If SteamCollection is false you can add here your mod ids                      |
+
+**Be careful by changing the `SavedMods.json`. This file is a temp file for the program to save which mods are posted and when the last change was. If you want to reset the bot don´t delete this file or the content of the file. This will be a critical error! If you want to reset this file just insert `[]`**
+
+## Service usage
 
 Start programme manually
 ```bash

@@ -1,0 +1,16 @@
+[Unit]
+Description=DiscordModNotifiyer
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/DMN/
+User=root
+Group=root
+Restart=on-failure
+RestartSec=5s
+ExecStart=/usr/bin/screen -DmS DiscordModNotifiyer /opt/DMN/DiscordModNotifiyer
+ExecStop=/usr/bin/screen -S DiscordModNotifiyer -X quit
+
+[Install]
+WantedBy=multi-user.target

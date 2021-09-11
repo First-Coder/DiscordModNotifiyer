@@ -48,9 +48,8 @@ namespace DiscordModNotifiyer
             Settings = JsonConvert.DeserializeObject<Settings>(File.ReadAllText(SETTINGS_FILENAME));
 
             var steamApi = new SteamApi();
-            var discordApi = new DiscordApi();
 
-            steamApi.OnUpdatedModsFound += (sender, e) => _ = discordApi.SendHook(sender, e);
+            steamApi.OnUpdatedModsFound += (sender, e) => _ = DiscordExtensions.SendHook(e.Mods);
 
             ConsoleExtensions.ClearConsole();
 

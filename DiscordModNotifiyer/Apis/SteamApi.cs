@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -14,12 +13,25 @@ namespace DiscordModNotifiyer.Apis
 {
     class SteamApi
     {
+        /// <summary>
+        /// Event if new mods are avalible
+        /// </summary>
         public event EventHandler<UpdatedModsEventArgs> OnUpdatedModsFound;
 
+        /// <summary>
+        /// Time method for checking if new mods are avalible
+        /// </summary>
         private System.Timers.Timer timer;
 
         #region Load / Refresh Timer
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public SteamApi() => RefreshSettings();
+
+        /// <summary>
+        /// Set the timer (if needed) for automatic check if new mods are avalible
+        /// </summary>
         public void RefreshSettings()
         {
             timer = new System.Timers.Timer(Program.Settings.AutomaticRefreshMin * 60 * 1000);
@@ -28,58 +40,15 @@ namespace DiscordModNotifiyer.Apis
         }
         #endregion
 
-        #region Static methods
-        public static async Task<List<SteamPlayerPlayerModel>> GetSteamPlayers(List<string> steamids)
-        {
-            var request = WebRequest.Create(Program.STEAM_API_PLAYER_URL + Program.Settings.SteamApiKey + "&steamids=" + String.Join(",", steamids));
-            request.Method = "GET";
-
-            using var webResponse = request.GetResponse();
-            using var webStream = webResponse.GetResponseStream();
-
-            using var reader = new StreamReader(webStream);
-            var data = await reader.ReadToEndAsync();
-            var model = JsonConvert.DeserializeObject<SteamPlayerModel>(data);
-
-            return model.response.players;
-        }
-
-        public static async Task<string> GetGameInfo(double appId)
-        {
-            var filename = "./gamelist.json";
-            var reloadList = !File.Exists(filename) || File.GetLastWriteTime(filename).AddDays(1) < DateTime.Now;
-
-            if (reloadList)
-            {
-                var request = WebRequest.Create(Program.STEAM_API_GAME_LIST_URL);
-                request.Method = "GET";
-
-                using var webResponse = request.GetResponse();
-                using var webStream = webResponse.GetResponseStream();
-
-                using var reader = new StreamReader(webStream);
-                var data = await reader.ReadToEndAsync();
-
-                using(StreamWriter sw = File.CreateText(filename))
-                {
-                    sw.WriteLine(data);
-                }
-            }
-
-            var content = File.ReadAllText(filename);
-            var apps = JsonConvert.DeserializeObject<GameInfo>(content).applist.apps;
-            return apps.FirstOrDefault(x => x.appid.Equals(appId)).name ?? "Unknown Gamename";
-        }
-
-        public static async Task<SteamFileDetailJsonDetailModel> GetCollectionInfo(double steamCollectionId)
-        {
-            var model = await GetPublishedFileDetails<SteamFileDetailJsonModel>(new List<double> { steamCollectionId });
-            return model.response.publishedfiledetails.FirstOrDefault();
-        }
-        #endregion
-
         #region Execute Steam Web Api
+        /// <summary>
+        /// Called timer event
+        /// </summary>
         private async void OnTimedEvent(object source, System.Timers.ElapsedEventArgs e) => await UpdateSteamMods();
+
+        /// <summary>
+        /// Get all mod ids by a given collection or over the Settings.json
+        /// </summary>
         public async Task UpdateSteamMods()
         {
             ConsoleExtensions.WriteColor(@"[//--Execute Refresh----------------------------------------------]", ConsoleColor.DarkGreen);
@@ -115,12 +84,16 @@ namespace DiscordModNotifiyer.Apis
         #endregion
 
         #region Check Mods for an Update
+        /// <summary>
+        /// Check if the given mod ids got an update and call the event if needed
+        /// </summary>
+        /// <param name="modIds">Given mod ids</param>
         private async Task CheckSteamMods(List<double> modIds)
         {
             ConsoleExtensions.WriteColor(@$"[// ]Checking {modIds.Count} Steam mods...", ConsoleColor.DarkGreen);
 
             var filename = "./SavedMods.json";
-            var model = await GetPublishedFileDetails<SteamFileDetailJsonModel>(modIds);
+            var model = await SteamExtensions.GetPublishedFileDetails<SteamFileDetailJsonModel>(modIds);
             var needUpdateModels = new List<SteamFileDetailJsonDetailModel>();
             var savedMods = JsonConvert.DeserializeObject<List<LastEditModModel>>(File.ReadAllText(filename));
 
@@ -156,28 +129,5 @@ namespace DiscordModNotifiyer.Apis
             }
         }
         #endregion
-
-        private static async Task<T> GetPublishedFileDetails<T>(List<double> files)
-        {
-            var parameters = new List<KeyValuePair<string, string>>();
-            int i = 0;
-            foreach (var id in files)
-            {
-                parameters.Add(new KeyValuePair<string, string>($"publishedfileids[{i++}]", id.ToString()));
-            }
-            parameters.Add(new KeyValuePair<string, string>("itemcount", i.ToString()));
-
-            var httpClient = new HttpClient();
-
-            using (var content = new FormUrlEncodedContent(parameters))
-            {
-                content.Headers.Clear();
-                content.Headers.Add("Content-Type", "application/x-www-form-urlencoded");
-
-                HttpResponseMessage response = await httpClient.PostAsync(Program.STEAM_API_FILE_DETAILS_URL, content);
-
-                return JsonConvert.DeserializeObject<T>(await response.Content.ReadAsStringAsync());
-            }
-        }
     }
 }

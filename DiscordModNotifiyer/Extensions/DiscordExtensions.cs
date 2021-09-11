@@ -1,27 +1,30 @@
-﻿using DiscordModNotifiyer.Events;
-using DiscordModNotifiyer.Extensions;
-using DiscordModNotifiyer.Models;
+﻿using DiscordModNotifiyer.Models;
 using JNogueira.Discord.Webhook.Client;
 using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
 
-namespace DiscordModNotifiyer.Apis
+namespace DiscordModNotifiyer.Extensions
 {
-    public class DiscordApi
+    public class DiscordExtensions
     {
-        public async Task SendHook(object sender, UpdatedModsEventArgs e)
+        /// <summary>
+        /// Call a text messages to the discord web hook definied by the given mods
+        /// </summary>
+        /// <param name="mods">Mods that should posted to the discord</param>
+        public static async Task SendHook(List<SteamFileDetailJsonDetailModel> mods)
         {
-            ConsoleExtensions.WriteColor(@$"[// ]Send {e.Mods.Count} Steam mods to discord...", ConsoleColor.DarkGreen);
+            ConsoleExtensions.WriteColor(@$"[// ]Send {mods.Count} Steam mods to discord...", ConsoleColor.DarkGreen);
 
             // Get all Steam developer
             var developerSteamIds = new List<string>();
-            foreach(var mod in e.Mods)
+            foreach (var mod in mods)
             {
                 developerSteamIds.Add(mod.creator);
             }
 
-            foreach (var mod in e.Mods)
+            foreach (var mod in mods)
             {
                 ConsoleExtensions.WriteColor(@$"[// ]Send {mod.title} ({mod.publishedfileid}) to discord...", ConsoleColor.DarkGreen);
 
@@ -29,12 +32,12 @@ namespace DiscordModNotifiyer.Apis
                 string collectionString = "";
                 if (Program.Settings.SteamCollection)
                 {
-                    collection = await SteamApi.GetCollectionInfo(Program.Settings.SteamCollectionId);
+                    collection = await SteamExtensions.GetCollectionInfo(Program.Settings.SteamCollectionId);
                     collectionString = $" | Collection: {collection.title} (Id: {Program.Settings.SteamCollectionId})";
                 }
 
-                var players = await SteamApi.GetSteamPlayers(developerSteamIds);
-                var gamename = await SteamApi.GetGameInfo(mod.creator_app_id);
+                var players = await SteamExtensions.GetSteamPlayers(developerSteamIds);
+                var gamename = await SteamExtensions.GetGameInfo(mod.creator_app_id);
                 var client = new DiscordWebhookClient(Program.Settings.DiscordWebHook);
                 var message = new DiscordMessage(
                     $"{gamename}{collectionString}\nMod: {mod.title} (Id: {mod.publishedfileid})",

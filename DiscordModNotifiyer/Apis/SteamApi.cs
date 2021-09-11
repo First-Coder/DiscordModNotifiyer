@@ -103,7 +103,17 @@ namespace DiscordModNotifiyer.Apis
             var filename = "./SavedMods.json";
             var model = await SteamExtensions.GetPublishedFileDetails(modIds);
             var needUpdateModels = new List<SteamFileDetailJsonDetailModel>();
-            var savedMods = JsonConvert.DeserializeObject<List<LastEditModModel>>(File.ReadAllText(filename));
+
+            List<LastEditModModel> savedMods;
+            try
+            {
+                savedMods = JsonConvert.DeserializeObject<List<LastEditModModel>>(File.ReadAllText(filename));
+            }
+            catch(Exception e)
+            {
+                ConsoleExtensions.CriticalError(e.Message, 2);
+                return;
+            }
 
             // Http request failed. No check possible
             if (model == null)

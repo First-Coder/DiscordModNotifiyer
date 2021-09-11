@@ -36,23 +36,23 @@ systemctl enable LinuxProxyChanger
 
 Start programme manually
 ```bash
-systemctl start LinuxProxyChanger
+systemctl start DMN
 ```
 
 Stop programme manually
 ```bash
-systemctl stop LinuxProxyChanger
+systemctl stop DMN
 ```
 
 Check programme status
 ```bash
-systemctl status LinuxProxyChanger
+systemctl status DMN
 ```
 
 You can call up the console of the program with the following command
 
 ```bash
-screen -r LinuxProxyChanger
+screen -r DMN
 ```
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.

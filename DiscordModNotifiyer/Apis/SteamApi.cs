@@ -129,6 +129,10 @@ namespace DiscordModNotifiyer.Apis
                     needUpdateModels.Add(mod);
                     if (sMod == null)
                     {
+                        if(Program.Settings.Debug)
+                        {
+                            ConsoleExtensions.WriteColor($"[// Debug ]Mod Id \"{mod.publishedfileid}\" is not found in SavedMod.json file. Set them now to needed update", ConsoleColor.Yellow);
+                        }
                         savedMods.Add(new LastEditModModel
                         {
                             ModId = mod.publishedfileid.ToString(),
@@ -137,6 +141,10 @@ namespace DiscordModNotifiyer.Apis
                     }
                     else
                     {
+                        if(Program.Settings.Debug)
+                        {
+                            ConsoleExtensions.WriteColor($"[// Debug ]Mod Id {sMod.ModId} \"{mod.publishedfileid}\" need a update cause the timestamps are not even ({sMod.LastUpdate} != {mod.time_updated})", ConsoleColor.Yellow);
+                        }
                         savedMods.Find(x => x.ModId.Equals(mod.publishedfileid.ToString())).LastUpdate = mod.time_updated.ToString();
                     }
                 }
@@ -144,7 +152,7 @@ namespace DiscordModNotifiyer.Apis
 
             File.WriteAllText(filename, JsonConvert.SerializeObject(savedMods));
 
-            if (OnUpdatedModsFound != null)
+            if (OnUpdatedModsFound != null && needUpdateModels.Count > 0)
             {
                 OnUpdatedModsFound(this, new UpdatedModsEventArgs
                 {

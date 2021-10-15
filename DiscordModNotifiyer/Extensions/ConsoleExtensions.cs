@@ -38,6 +38,7 @@ namespace DiscordModNotifiyer.Extensions
             WriteColor($"[// Check the Collection Id:] {Program.Settings.SteamCollection}", ConsoleColor.DarkGreen);
             var ids = Program.Settings.SteamCollection ? Program.Settings.SteamCollectionId.ToString() : String.Join(", ", Program.Settings.SteamModIds.ToArray());
             WriteColor($"[// Collection Id or Mod Ids:] {ids}", ConsoleColor.DarkGreen);
+            WriteColor($"[// Logfile:] {Program.Settings.LogFile}", ConsoleColor.DarkGreen);
             WriteColor(@"[//--Options------------------------------------------------------]", ConsoleColor.DarkGreen);
             WriteColor($"[// 1:] Execute Refresh", ConsoleColor.DarkGreen);
             WriteColor($"[// 2:] Reload settings.json", ConsoleColor.DarkGreen);
@@ -47,17 +48,17 @@ namespace DiscordModNotifiyer.Extensions
 
             if (string.IsNullOrEmpty(Program.Settings.SteamApiKey))
             {
-                WriteColor(@"[//--No Steam API Key---------------------------------------------]", ConsoleColor.DarkRed);
-                WriteColor($"[//:] Please insert a Steam API Key into the Settings.json", ConsoleColor.DarkRed);
-                WriteColor(@"[//---------------------------------------------------------------]", ConsoleColor.DarkRed);
+                WriteColor(@"[//--No Steam API Key---------------------------------------------]", ConsoleColor.DarkRed, true);
+                WriteColor($"[//:] Please insert a Steam API Key into the Settings.json", ConsoleColor.DarkRed, true);
+                WriteColor(@"[//---------------------------------------------------------------]", ConsoleColor.DarkRed, true);
                 Environment.Exit(1);
             }
 
             if (string.IsNullOrEmpty(Program.Settings.SteamApiKey))
             {
-                WriteColor(@"[//--No Discord Web Hook------------------------------------------]", ConsoleColor.DarkRed);
-                WriteColor($"[//:] Please insert a Discord Web Hook into the Settings.json", ConsoleColor.DarkRed);
-                WriteColor(@"[//---------------------------------------------------------------]", ConsoleColor.DarkRed);
+                WriteColor(@"[//--No Discord Web Hook------------------------------------------]", ConsoleColor.DarkRed, true);
+                WriteColor($"[//:] Please insert a Discord Web Hook into the Settings.json", ConsoleColor.DarkRed, true);
+                WriteColor(@"[//---------------------------------------------------------------]", ConsoleColor.DarkRed, true);
                 Environment.Exit(2);
             }
         }
@@ -69,9 +70,9 @@ namespace DiscordModNotifiyer.Extensions
         /// <param name="exitCode"></param>
         public static void CriticalError(string text, int exitCode)
         {
-            WriteColor(@"[//--Critical Error-----------------------------------------------]", ConsoleColor.DarkRed);
-            WriteColor($"[//:] {text}", ConsoleColor.DarkRed);
-            WriteColor(@"[//---------------------------------------------------------------]", ConsoleColor.DarkRed);
+            WriteColor(@"[//--Critical Error-----------------------------------------------]", ConsoleColor.DarkRed, true);
+            WriteColor($"[//:] {text}", ConsoleColor.DarkRed, true);
+            WriteColor(@"[//---------------------------------------------------------------]", ConsoleColor.DarkRed, true);
             Environment.Exit(exitCode);
         }
 
@@ -79,12 +80,18 @@ namespace DiscordModNotifiyer.Extensions
         /// Set a error message into the console
         /// </summary>
         /// <param name="text">Information text</param>
-        public static void Error(string text)
+#nullable enable
+        public static void Error(string text, string? debug = null)
         {
-            WriteColor(@"[// We got an Error...]", ConsoleColor.DarkRed);
-            WriteColor($"[// ]{text}", ConsoleColor.DarkRed);
-            WriteColor(@"[// Continue application...]", ConsoleColor.DarkRed);
+            WriteColor(@"[// We got an Error...]", ConsoleColor.DarkRed, true);
+            WriteColor($"[// ]{text}", ConsoleColor.DarkRed, true);
+            if(debug != null || string.IsNullOrEmpty(debug))
+            {
+                WriteColor($"[// ]{debug}", ConsoleColor.DarkYellow, true);
+            }
+            WriteColor(@"[// Continue application...]", ConsoleColor.DarkRed, true);
         }
+#nullable disable
 
         /// <summary>
         /// Write some coloring console messages for the user
@@ -92,7 +99,7 @@ namespace DiscordModNotifiyer.Extensions
         /// </summary>
         /// <param name="message">Message to write</param>
         /// <param name="color">ConsoleColor value of the color</param>
-        public static void WriteColor(string message, ConsoleColor color)
+        public static void WriteColor(string message, ConsoleColor color, bool isError = false)
         {
             var pieces = Regex.Split(message, @"(\[[^\]]*\])");
 
@@ -111,6 +118,18 @@ namespace DiscordModNotifiyer.Extensions
             }
 
             Console.WriteLine();
+
+            if(Program.LogFile != null)
+            {
+                if (isError)
+                {
+                    Program.LogFile.Error(message);
+                }
+                else
+                {
+                    Program.LogFile.Information(message);
+                }
+            }
         }
     }
 }

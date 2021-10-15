@@ -2,6 +2,7 @@
 using DiscordModNotifiyer.Extensions;
 using DiscordModNotifiyer.Models;
 using Newtonsoft.Json;
+using Serilog;
 using System;
 using System.IO;
 
@@ -40,12 +41,24 @@ namespace DiscordModNotifiyer
         public static Settings Settings;
 
         /// <summary>
+        /// Logfile class
+        /// </summary>
+        public static ILogger LogFile;
+
+        /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="args"></param>
         static void Main(string[] args)
         {
             ReloadSettings();
+
+            if(Settings.LogFile != null && !string.IsNullOrEmpty(Settings.LogFile))
+            {
+                LogFile = new LoggerConfiguration()
+                    .WriteTo.File(Settings.LogFile)
+                    .CreateLogger();
+            }
 
             var steamApi = new SteamApi();
             steamApi.OnUpdatedModsFound += (sender, e) => _ = DiscordExtensions.SendHook(e.Mods);

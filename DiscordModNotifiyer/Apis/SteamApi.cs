@@ -65,6 +65,8 @@ namespace DiscordModNotifiyer.Apis
 
                 using (var content = new FormUrlEncodedContent(parameters))
                 {
+                    string jsonContent = "Content was not parsed";
+
                     content.Headers.Clear();
                     content.Headers.Add("Content-Type", "application/x-www-form-urlencoded");
 
@@ -72,14 +74,15 @@ namespace DiscordModNotifiyer.Apis
                     {
                         HttpResponseMessage response = await httpClient.PostAsync(Program.STEAM_API_COLLECTION_URL, content);
 
-                        var model = JsonConvert.DeserializeObject<SteamCollectionModel>(await response.Content.ReadAsStringAsync());
+                        jsonContent = await response.Content.ReadAsStringAsync();
+                        var model = JsonConvert.DeserializeObject<SteamCollectionModel>(jsonContent);
                         var modIds = model.response.collectiondetails.FirstOrDefault()?.children.Select(x => x.publishedfileid);
 
                         await CheckSteamMods(modIds.ToList());
                     }
                     catch (Exception e)
                     {
-                        ConsoleExtensions.Error(e.Message);
+                        ConsoleExtensions.Error(e.Message, Program.Settings.Debug ? $"Json Content: {jsonContent}" : "");
                         return;
                     }
                 }

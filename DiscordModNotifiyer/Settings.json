@@ -1,7 +1,8 @@
 {
   "__General": "General settings",
   "SteamApiKey": "",
-  "Debug":  true,
+  "Debug": true,
+  "LogFile":  "",
   "AutomaticRefresh": true,
   "AutomaticRefreshMin": 1,
 

@@ -76,7 +76,7 @@ namespace DiscordModNotifiyer.Apis
 
                         jsonContent = await response.Content.ReadAsStringAsync();
                         var model = JsonConvert.DeserializeObject<SteamCollectionModel>(jsonContent);
-                        var modIds = model.response.collectiondetails.FirstOrDefault()?.children.Select(x => x.publishedfileid);
+                        var modIds = model.response.collectiondetails.FirstOrDefault()?.children?.Select(x => x.publishedfileid);
 
                         await CheckSteamMods(modIds.ToList());
                     }
@@ -142,13 +142,20 @@ namespace DiscordModNotifiyer.Apis
                             LastUpdate = mod.time_updated.ToString()
                         });
                     }
-                    else
+                    else if(mod.time_updated != 0) // Check if steam request was successfull
                     {
                         if(Program.Settings.Debug)
                         {
                             ConsoleExtensions.WriteColor($"[// Debug ]Mod Id {sMod.ModId} \"{mod.publishedfileid}\" need a update cause the timestamps are not even ({sMod.LastUpdate} != {mod.time_updated})", ConsoleColor.Yellow);
                         }
                         savedMods.Find(x => x.ModId.Equals(mod.publishedfileid.ToString())).LastUpdate = mod.time_updated.ToString();
+                    }
+                    else
+                    {
+                        if(Program.Settings.Debug)
+                        {
+                            ConsoleExtensions.WriteColor($"[// Debug ]Mod Id {sMod.ModId} \"{mod.publishedfileid}\" was skipped cause time update value from request was 0", ConsoleColor.Yellow);
+                        }
                     }
                 }
             }
